@@ -19,9 +19,7 @@ public class libros {
         this.genero = genero;
         this.discontinuo = discontinuo;
     }
-
-
-    
+   
     public String getNombre() {
         return nombre;
     }
@@ -75,11 +73,6 @@ public class libros {
         return "libros [nombre=" + nombre + ", autor=" + autor + ", editorial=" + editorial + ", isbn=" + isbn
                 + ", genero=" + genero + ", discontinuo=" + discontinuo + "]";
     }
-
-
-
-    
-    
 }
 
 

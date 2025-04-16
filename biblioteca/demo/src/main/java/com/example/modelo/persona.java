@@ -2,10 +2,10 @@ package com.example.modelo;
 
 public class persona {
 
-    String nombre;
-    String apellido;
-    int dni;
-    String email;
+    private String nombre;
+    private String apellido;
+    private int dni;
+    private String email;
 
     public persona() {
     }

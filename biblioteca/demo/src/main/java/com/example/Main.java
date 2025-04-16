@@ -33,7 +33,11 @@ System.out.println(persona1.toString());
     libro1.setNombre("Cien años de soledad");
     //libro1.nombre = "Cien años de soledad";
 
+    persona persona5 = new persona();
 
+    persona5.setNombre("Juan");
+
+    System.out.println(persona5.toString());
 
     //libro1.nombre = "El capitan Garfio";
     //libro1.autor = "Celine Dione";
