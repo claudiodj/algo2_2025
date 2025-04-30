@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.modelo.alumno;
 import com.example.modelo.libros;
 import com.example.modelo.persona;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ public class Main {
 
         ArrayList<libros> listaLibros = new ArrayList<>();
         ArrayList<persona> listaPersonas = new ArrayList<>();
+        ArrayList<alumno> listaAlumnos = new ArrayList<>();
 
         String opcion;
 
@@ -87,6 +89,51 @@ public class Main {
             System.out.println(p);
         }
 
+        // Ingreso de alumnos
+        do {
+
+            alumno alumno = new alumno();
+
+            System.out.println("Ingrese nombre del alumno: ");
+            alumno.setNombre(teclado.nextLine());
+
+            System.out.print("Ingrese apellido del alumno: ");
+            alumno.setApellido(teclado.nextLine());
+
+            System.out.print("Ingrese email del alumno: ");
+            alumno.setEmail(teclado.nextLine());
+
+            System.out.print("Ingrese DNI (número) del alumno: ");
+            alumno.setDni(teclado.nextInt());
+
+            teclado.nextLine(); // limpiar buffer
+
+            System.out.print("Ingrese Legajo (número) del alumno: ");
+            alumno.setNroLegajo(teclado.nextInt());
+
+            teclado.nextLine(); // limpiar buffer
+            
+            System.out.print("Ingrese Turno del alumno (m/t/n): ");
+            alumno.setTurno(teclado.nextLine().charAt(0));
+
+            System.out.print("Ingrese Carrera del alumno: ");
+            alumno.setCarrera(teclado.nextLine());
+
+            listaAlumnos.add(alumno);
+
+            System.out.print("¿Desea ingresar otro alumno? (s/n): ");
+            opcion = teclado.nextLine();
+
+        } while (opcion.equalsIgnoreCase("s"));
+
+        System.out.println("Cantidad de alumnos de la lista : " + listaAlumnos.size());
+        // Mostrar todos los alumnos ingresados
+        System.out.println("\n--- Lista de alumnos ingresados ---");
+        for (alumno alumn : listaAlumnos) {
+            System.out.println(alumn);
+        }
+
+        
         teclado.close();
 
     }
