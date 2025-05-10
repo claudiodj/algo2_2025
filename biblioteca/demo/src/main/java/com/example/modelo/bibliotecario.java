@@ -46,11 +46,22 @@ public class bibliotecario extends persona {
         // Retornar datos
         return "Préstamo registrado:\n" +
                "Libro: " + libro.getNombre() + " (ISBN: " + libro.getIsbn() + ")\n" +
-               "Prestado a: " + alumno.getNombre() + " " + alumno.getApellido() + 
+               "Prestado a: " + alumno.getNombre() + ", " + alumno.getApellido() + 
                " (Legajo: " + alumno.getNroLegajo() + ")\n" +
                "Fecha: " + fechaPrestamo.toString() + "\n" +
                "Responsable: " + this.getNombre() + " (Empleado N°: " + this.nroEmpleado + ")";
     }
     
+    public String catalogarLibro(libros libro) {
+        // Validaciones básicas
+        if (libro == null) {
+            return "Error: El libro no puede ser nulo";
+        }
+
+        
+        return null;
+
+
+    }
     
 }
