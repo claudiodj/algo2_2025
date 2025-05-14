@@ -1,5 +1,8 @@
 package com.example.modelo;
-public class libros {
+
+import java.io.Serializable;
+
+public class libros implements Serializable {
 
     private String nombre;
     private String autor;
