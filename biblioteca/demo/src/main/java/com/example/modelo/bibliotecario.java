@@ -6,6 +6,8 @@ public class bibliotecario extends persona {
 
     int nroEmpleado;
     char turno;
+
+    public bibliotecario(){}
     
     public bibliotecario(int nroEmpleado, char turno) {
         this.nroEmpleado = nroEmpleado;
@@ -63,5 +65,12 @@ public class bibliotecario extends persona {
 
 
     }
+    
+    @Override
+    public String toString() {
+        return "bibliotecario [nroEmpleado=" + nroEmpleado + ", turno=" + turno + ", Nombre=" + getNombre()
+                + ", Apellido=" + getApellido() + ", Dni=" + getDni() + ", Email=" + getEmail() + "]";
+    }
+
     
 }

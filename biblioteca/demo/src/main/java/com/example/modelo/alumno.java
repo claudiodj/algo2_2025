@@ -1,13 +1,12 @@
 package com.example.modelo;
 
-public class alumno extends persona{
+public class alumno extends persona {
 
     int nroLegajo;
     char turno;
     String carrera;
 
     public alumno(){
-
     }
     
     public alumno(int nroLegajo, char turno, String carrera) {
@@ -38,6 +37,13 @@ public class alumno extends persona{
     }
     public void setCarrera(String carrera) {
         this.carrera = carrera;
+    }
+
+    @Override
+    public String toString() {
+        return "alumno [nombre= " + getNombre() + ", apellido= " + getApellido() + ", DNI= " + getDni() + 
+                ", email= " + getEmail() + ", legajo= " + getNroLegajo() + ", turno=" + getTurno() + 
+                ", carrera=" + getCarrera() + "]";
     }
 
     

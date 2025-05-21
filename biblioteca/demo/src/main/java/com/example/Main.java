@@ -17,17 +17,18 @@ import java.io.ObjectOutputStream;
 
 public class Main {
     private static final Scanner teclado = new Scanner(System.in);
+
     private static ArrayList<libros> listaLibros = new ArrayList<>();
     private static ArrayList<persona> listaPersonas = new ArrayList<>();
     private static ArrayList<alumno> listaAlumnos = new ArrayList<>();
     private static ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
 
-    //----- en este punto tienen que poner la ruta donde ustedes dejaran los archivos
+    // ----- en este punto tienen que poner la ruta donde ustedes dejaran los
+    // archivos
     private static final String ARCHIVO_LIBROS = "C:\\java\\biblioteca\\libros.dat";
     private static final String ARCHIVO_PERSONAS = "C:\\java\\biblioteca\\personas.dat";
     private static final String ARCHIVO_ALUMNOS = "C:\\java\\biblioteca\\alumnos.dat";
     private static final String ARCHIVO_BIBLIOTECARIOS = "C:\\java\\biblioteca\\bibliotecarios.dat";
-
 
     public static void main(String[] args) {
         int opcion;
@@ -36,7 +37,7 @@ public class Main {
             opcion = leerOpcion();
             procesarOpcion(opcion);
         } while (opcion != 11);
-        
+
         teclado.close();
         System.out.println("Salimos del programa");
     }
@@ -51,9 +52,9 @@ public class Main {
         System.out.println("6) Listar Alumnos");
         System.out.println("7) Cargar Bibliotecarios");
         System.out.println("8) Listar Bibliotecarios");
-        System.out.println("9) Cargar Datos");
-        System.out.println("10) Guardar Datos");
-        
+        System.out.println("9) Cargar Datos de Archivos a Memoria");
+        System.out.println("10) Guardar Datos de Memoria a Archivos");
+
         System.out.println("11) Salir");
         System.out.print("Ingrese una opción: ");
     }
@@ -71,24 +72,24 @@ public class Main {
             case 1 -> cargarLibros();
             case 2 -> listarLibros(listaLibros);
             /*
-            case 3 -> cargarPersonas();
-            case 4 -> listarPersonas();
-            */
+             * case 3 -> cargarPersonas();
+             * case 4 -> listarPersonas();
+             */
             case 5 -> cargarAlumnos();
             case 6 -> listarAlumnos(listaAlumnos);
-            /*
             case 7 -> cargarBibliotecarios();
-            case 8 -> listarBibliotecarios();
-            */
-            case 9 -> cargarDatos();    // Traerá todo lo que esté en los archivos a sus correspondientes arrays
-            case 10 -> guardarDatos();  // Llevará todo lo que esté en los arrays a sus correspondientes archivos
-            
+            case 8 -> listarBibliotecarios(listaBibliotecarios);
+            case 9 -> cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los archivos a sus correspondientes
+                                                     // arrays
+            case 10 -> guardarDatosALosArchivos(); // Llevará todo lo que esté en los arrays a sus correspondientes
+                                                   // archivos
+
             case 11 -> System.out.println("Saliendo del sistema...");
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
     }
 
-     private static void cargarLibros() {
+    private static void cargarLibros() {
         String opcion;
         do {
             libros libro = new libros();
@@ -118,20 +119,21 @@ public class Main {
         } while (opcion.equalsIgnoreCase("s"));
     }
 
-    private static void listarLibros(ArrayList<libros> listaLibros){
+    private static void listarLibros(ArrayList<libros> listaLibros) {
 
         if (listaLibros.size() == 0) {
 
             System.out.println("No hay libros cargados en la lista!");
-            
+
         } else {
-        System.out.println("Cantidad de libros de la lista : " + listaLibros.size());
-        // Mostrar todos los libros ingresados
-        System.out.println("\n--- Lista de libros ingresados ---");
-        for (libros lib : listaLibros) {
-            System.out.println(lib);
+            System.out.println("Cantidad de libros de la lista : " + listaLibros.size());
+            // Mostrar todos los libros ingresados
+            System.out.println("\n--- Lista de libros ingresados ---");
+            for (libros lib : listaLibros) {
+                System.out.println("Indice en la lista: " + listaLibros.indexOf(lib));
+                System.out.println(lib);
+            }
         }
-    }
     }
 
     private static void cargarAlumnos() {
@@ -154,7 +156,7 @@ public class Main {
             System.out.print("Ingrese turno ( M / T / N ): ");
             alumno.setTurno(teclado.nextLine().charAt(0));
             System.out.print("Ingrese carrera: ");
-            alumno.setEmail(teclado.nextLine());
+            alumno.setCarrera(teclado.nextLine());
 
             listaAlumnos.add(alumno);
             System.out.print("¿Desea ingresar otro alumno? (s/n): ");
@@ -162,32 +164,75 @@ public class Main {
         } while (opcion.equalsIgnoreCase("s"));
     }
 
-    private static void listarAlumnos(ArrayList<alumno> listaAlumnos){
+    private static void listarAlumnos(ArrayList<alumno> listaAlumnos) {
 
         if (listaAlumnos.size() == 0) {
 
             System.out.println("No hay alumnos cargados en la lista!");
-            
+
         } else {
-        System.out.println("Cantidad de alumnos de la lista : " + listaAlumnos.size());
-        // Mostrar todos los alumnos ingresados
-        System.out.println("\n--- Lista de alumnos ingresados ---");
-        for (alumno alu : listaAlumnos) {
-            System.out.println(alu);
+            System.out.println("Cantidad de alumnos de la lista : " + listaAlumnos.size());
+            // Mostrar todos los alumnos ingresados
+            System.out.println("\n--- Lista de alumnos ingresados ---");
+            for (alumno alu : listaAlumnos) {
+                System.out.println("Indice en la lista: " + listaAlumnos.indexOf(alu));
+                System.out.println(alu);
+            }
         }
     }
+
+    private static void cargarBibliotecarios() {
+        String opcion;
+        do {
+            bibliotecario bib = new bibliotecario();
+
+            System.out.println("Ingrese nombre del bibliotecario: ");
+            bib.setNombre(teclado.nextLine());
+            System.out.print("Ingrese apellido del bibliotecario: ");
+            bib.setApellido(teclado.nextLine());
+            System.out.print("Ingrese DNI (número): ");
+            bib.setDni(teclado.nextInt());
+            teclado.nextLine(); // limpiar buffer
+            System.out.print("Ingrese email: ");
+            bib.setEmail(teclado.nextLine());
+            System.out.print("Ingrese Número de Empleado: ");
+            bib.setNroEmpleado(teclado.nextInt());
+            teclado.nextLine(); // limpiar buffer
+            System.out.print("Ingrese turno ( M / T / N ): ");
+            bib.setTurno(teclado.nextLine().charAt(0));
+
+            listaBibliotecarios.add(bib);
+            System.out.print("¿Desea ingresar otro bibliotecario? (s/n): ");
+            opcion = teclado.nextLine();
+        } while (opcion.equalsIgnoreCase("s"));
     }
 
+    private static void listarBibliotecarios(ArrayList<bibliotecario> listaBibliotecarios) {
 
-        @SuppressWarnings("unchecked")
-        private static void cargarDatos() {
+        if (listaBibliotecarios.size() == 0) {
+
+            System.out.println("No hay bibliotecarios cargados en la lista!");
+
+        } else {
+            System.out.println("Cantidad de bibliotecarios de la lista : " + listaBibliotecarios.size());
+            // Mostrar todos los bibliotecarios ingresados
+            System.out.println("\n--- Lista de bibliotecarios ingresados ---");
+            for (bibliotecario bib : listaBibliotecarios) {
+                System.out.println("Indice en la lista: " + listaBibliotecarios.indexOf(bib));
+                System.out.println(bib);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void cargarDatosDesdeLosArchivos() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_LIBROS))) {
             listaLibros = (ArrayList<libros>) ois.readObject();
             System.out.println("Datos de libros cargados desde " + ARCHIVO_LIBROS);
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error al cargar libros: " + e.getMessage());
         }
-        
+
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_ALUMNOS))) {
             listaAlumnos = (ArrayList<alumno>) ois.readObject();
             System.out.println("Datos de alumnos cargados desde " + ARCHIVO_ALUMNOS);
@@ -195,10 +240,17 @@ public class Main {
             System.err.println("Error al cargar alumnos: " + e.getMessage());
         }
 
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_BIBLIOTECARIOS))) {
+            listaBibliotecarios = (ArrayList<bibliotecario>) ois.readObject();
+            System.out.println("Datos de bibliotecarios cargados desde " + ARCHIVO_BIBLIOTECARIOS);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error al cargar bibliotecarios: " + e.getMessage());
+        }
+
         // Repetir para los otros ArrayList
     }
-    
-    private static void guardarDatos() {
+
+    private static void guardarDatosALosArchivos() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_LIBROS))) {
             oos.writeObject(listaLibros);
             System.out.println("Datos de libros guardados en " + ARCHIVO_LIBROS);
@@ -211,6 +263,13 @@ public class Main {
             System.out.println("Datos de alumnos guardados en " + ARCHIVO_ALUMNOS);
         } catch (IOException e) {
             System.err.println("Error al guardar alumnos: " + e.getMessage());
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_BIBLIOTECARIOS))) {
+            oos.writeObject(listaBibliotecarios);
+            System.out.println("Datos de bibliotecarios guardados en " + ARCHIVO_BIBLIOTECARIOS);
+        } catch (IOException e) {
+            System.err.println("Error al guardar bibliotecarios: " + e.getMessage());
         }
 
         // Repetir para los otros ArrayList (personas, bibliotecarios, etc.)
