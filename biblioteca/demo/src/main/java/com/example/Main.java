@@ -23,14 +23,22 @@ public class Main {
     private static ArrayList<alumno> listaAlumnos = new ArrayList<>();
     private static ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
 
-    // ----- en este punto tienen que poner la ruta donde ustedes dejaran los
-    // archivos
-    private static final String ARCHIVO_LIBROS = "C:\\java\\biblioteca\\libros.dat";
-    private static final String ARCHIVO_PERSONAS = "C:\\java\\biblioteca\\personas.dat";
-    private static final String ARCHIVO_ALUMNOS = "C:\\java\\biblioteca\\alumnos.dat";
-    private static final String ARCHIVO_BIBLIOTECARIOS = "C:\\java\\biblioteca\\bibliotecarios.dat";
+    // ----- en este punto tienen que poner la ruta donde ustedes dejaran los archivos
+    private static final String RUTA_ARCHIVOS = "C:\\java\\biblioteca\\";
+    private static final String ARCHIVO_LIBROS = RUTA_ARCHIVOS + "libros.dat";
+    private static final String ARCHIVO_PERSONAS = RUTA_ARCHIVOS + "personas.dat";
+    private static final String ARCHIVO_ALUMNOS = RUTA_ARCHIVOS + "alumnos.dat";
+    private static final String ARCHIVO_BIBLIOTECARIOS = RUTA_ARCHIVOS + "bibliotecarios.dat";
+
+    private static int hash_listaLibros;
 
     public static void main(String[] args) {
+
+        cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los archivos a sus correspondientes arrays
+
+        hash_listaLibros = listaLibros.hashCode();
+        System.out.println("Hash ni bien lei el archivo libros: " + hash_listaLibros);
+
         int opcion;
         do {
             mostrarMenu();
@@ -52,7 +60,7 @@ public class Main {
         System.out.println("6) Listar Alumnos");
         System.out.println("7) Cargar Bibliotecarios");
         System.out.println("8) Listar Bibliotecarios");
-        System.out.println("9) Cargar Datos de Archivos a Memoria");
+        // System.out.println("9) Cargar Datos de Archivos a Memoria");
         System.out.println("10) Guardar Datos de Memoria a Archivos");
 
         System.out.println("11) Salir");
@@ -79,12 +87,13 @@ public class Main {
             case 6 -> listarAlumnos(listaAlumnos);
             case 7 -> cargarBibliotecarios();
             case 8 -> listarBibliotecarios(listaBibliotecarios);
-            case 9 -> cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los archivos a sus correspondientes
-                                                     // arrays
+            // case 9 -> cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los
+            // archivos a sus correspondientes
+            // arrays
             case 10 -> guardarDatosALosArchivos(); // Llevará todo lo que esté en los arrays a sus correspondientes
                                                    // archivos
 
-            case 11 -> System.out.println("Saliendo del sistema...");
+            case 11 -> revisarAntesDeSalir(hash_listaLibros);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
     }
@@ -133,6 +142,7 @@ public class Main {
                 System.out.println("Indice en la lista: " + listaLibros.indexOf(lib));
                 System.out.println(lib);
             }
+            System.err.println("Hash actual: " + listaLibros.hashCode());
         }
     }
 
@@ -226,6 +236,8 @@ public class Main {
 
     @SuppressWarnings("unchecked")
     private static void cargarDatosDesdeLosArchivos() {
+
+        // En esta parte realizo la carga de ARCHIVO_LIBROS a la listaLibros
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_LIBROS))) {
             listaLibros = (ArrayList<libros>) ois.readObject();
             System.out.println("Datos de libros cargados desde " + ARCHIVO_LIBROS);
@@ -233,6 +245,7 @@ public class Main {
             System.err.println("Error al cargar libros: " + e.getMessage());
         }
 
+        // En esta parte realizo la carga de ARCHIVO_ALUMNOS a la listaAlumnos
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_ALUMNOS))) {
             listaAlumnos = (ArrayList<alumno>) ois.readObject();
             System.out.println("Datos de alumnos cargados desde " + ARCHIVO_ALUMNOS);
@@ -240,6 +253,7 @@ public class Main {
             System.err.println("Error al cargar alumnos: " + e.getMessage());
         }
 
+        // En esta parte realizo la carga de ARCHIVO_BIBLIOTECARIOS a la listaBibliotecarios
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_BIBLIOTECARIOS))) {
             listaBibliotecarios = (ArrayList<bibliotecario>) ois.readObject();
             System.out.println("Datos de bibliotecarios cargados desde " + ARCHIVO_BIBLIOTECARIOS);
@@ -273,6 +287,23 @@ public class Main {
         }
 
         // Repetir para los otros ArrayList (personas, bibliotecarios, etc.)
+    }
+
+
+    private static void revisarAntesDeSalir(int hash_anterior){
+
+        int hash_listarLibros_actual = listaLibros.hashCode();
+        if (hash_anterior != hash_listarLibros_actual) {
+            System.out.println("Seguro quiere salir? Las listas actuales no fueron guardadas a archivo");
+
+            String opcion_si_no;
+            System.out.print("¿Desea guardar los datos? (s/n): ");
+            opcion_si_no = teclado.nextLine();
+            if (opcion_si_no.equals("s")) {
+                guardarDatosALosArchivos();
+            }
+        }
+
     }
 
 }
