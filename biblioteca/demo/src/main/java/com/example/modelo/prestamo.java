@@ -10,6 +10,63 @@ public class prestamo {
     Date fechaPrestamo;
     Date fechaDevolucion;
 
+    prestamo(){}
+
+    public prestamo(com.example.modelo.bibliotecario bibliotecario, libros libro, com.example.modelo.alumno alumno,
+            Date fechaPrestamo, Date fechaDevolucion) {
+        this.bibliotecario = bibliotecario;
+        this.libro = libro;
+        this.alumno = alumno;
+        this.fechaPrestamo = fechaPrestamo;
+        this.fechaDevolucion = fechaDevolucion;
+    }
+
+    public bibliotecario getBibliotecario() {
+        return bibliotecario;
+    }
+
+    public void setBibliotecario(bibliotecario bibliotecario) {
+        this.bibliotecario = bibliotecario;
+    }
+
+    public libros getLibro() {
+        return libro;
+    }
+
+    public void setLibro(libros libro) {
+        this.libro = libro;
+    }
+
+    public alumno getAlumno() {
+        return alumno;
+    }
+
+    public void setAlumno(alumno alumno) {
+        this.alumno = alumno;
+    }
+
+    public Date getFechaPrestamo() {
+        return fechaPrestamo;
+    }
+
+    public void setFechaPrestamo(Date fechaPrestamo) {
+        this.fechaPrestamo = fechaPrestamo;
+    }
+
+    public Date getFechaDevolucion() {
+        return fechaDevolucion;
+    }
+
+    public void setFechaDevolucion(Date fechaDevolucion) {
+        this.fechaDevolucion = fechaDevolucion;
+    }
+
+    @Override
+    public String toString() {
+        return "prestamo [bibliotecario=" + bibliotecario + ", libro=" + libro + ", alumno=" + alumno
+                + ", fechaPrestamo=" + fechaPrestamo + ", fechaDevolucion=" + fechaDevolucion + "]";
+    }
+
     
 
 }

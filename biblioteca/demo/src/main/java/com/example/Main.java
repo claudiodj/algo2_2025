@@ -4,8 +4,10 @@ import com.example.modelo.alumno;
 import com.example.modelo.bibliotecario;
 import com.example.modelo.libros;
 import com.example.modelo.persona;
+import com.example.modelo.prestamo;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 // --- Clases nuevas que importamos para MANEJAR ARCHIVOS
@@ -22,8 +24,10 @@ public class Main {
     private static ArrayList<persona> listaPersonas = new ArrayList<>();
     private static ArrayList<alumno> listaAlumnos = new ArrayList<>();
     private static ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
+    private static ArrayList<prestamo> listaPrestamos = new ArrayList<>();
 
-    // ----- en este punto tienen que poner la ruta donde ustedes dejaran los archivos
+    // ----- en este punto tienen que poner la ruta donde ustedes dejaran los
+    // archivos
     private static final String RUTA_ARCHIVOS = "C:\\java\\biblioteca\\";
     private static final String ARCHIVO_LIBROS = RUTA_ARCHIVOS + "libros.dat";
     private static final String ARCHIVO_PERSONAS = RUTA_ARCHIVOS + "personas.dat";
@@ -31,20 +35,23 @@ public class Main {
     private static final String ARCHIVO_BIBLIOTECARIOS = RUTA_ARCHIVOS + "bibliotecarios.dat";
 
     private static int hash_listaLibros;
+    private static int hash_listaAlumnos;
 
     public static void main(String[] args) {
 
         cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los archivos a sus correspondientes arrays
 
         hash_listaLibros = listaLibros.hashCode();
+        hash_listaAlumnos = listaAlumnos.hashCode();
         System.out.println("Hash ni bien lei el archivo libros: " + hash_listaLibros);
+        System.out.println("Hash ni bien lei el archivo alumnos: " + hash_listaAlumnos);
 
         int opcion;
         do {
             mostrarMenu();
             opcion = leerOpcion();
             procesarOpcion(opcion);
-        } while (opcion != 11);
+        } while (opcion != 99);
 
         teclado.close();
         System.out.println("Salimos del programa");
@@ -62,8 +69,10 @@ public class Main {
         System.out.println("8) Listar Bibliotecarios");
         // System.out.println("9) Cargar Datos de Archivos a Memoria");
         System.out.println("10) Guardar Datos de Memoria a Archivos");
+        System.out.println("11) Registrar prestamo de libro");
+        System.out.println("12) Listar Prestamos");
 
-        System.out.println("11) Salir");
+        System.out.println("99) Salir");
         System.out.print("Ingrese una opción: ");
     }
 
@@ -93,7 +102,10 @@ public class Main {
             case 10 -> guardarDatosALosArchivos(); // Llevará todo lo que esté en los arrays a sus correspondientes
                                                    // archivos
 
-            case 11 -> revisarAntesDeSalir(hash_listaLibros);
+            case 11 -> prestarLibro();
+            case 12 -> listarPrestamos(listaPrestamos);
+            // case 13 -> recuperarLibro();
+            case 99 -> revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
     }
@@ -253,7 +265,8 @@ public class Main {
             System.err.println("Error al cargar alumnos: " + e.getMessage());
         }
 
-        // En esta parte realizo la carga de ARCHIVO_BIBLIOTECARIOS a la listaBibliotecarios
+        // En esta parte realizo la carga de ARCHIVO_BIBLIOTECARIOS a la
+        // listaBibliotecarios
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_BIBLIOTECARIOS))) {
             listaBibliotecarios = (ArrayList<bibliotecario>) ois.readObject();
             System.out.println("Datos de bibliotecarios cargados desde " + ARCHIVO_BIBLIOTECARIOS);
@@ -268,6 +281,8 @@ public class Main {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_LIBROS))) {
             oos.writeObject(listaLibros);
             System.out.println("Datos de libros guardados en " + ARCHIVO_LIBROS);
+            //------ Antes de seguir actualizo el hash ya que puede diferir del leido originalmente 
+            hash_listaLibros = listaLibros.hashCode();
         } catch (IOException e) {
             System.err.println("Error al guardar libros: " + e.getMessage());
         }
@@ -289,11 +304,49 @@ public class Main {
         // Repetir para los otros ArrayList (personas, bibliotecarios, etc.)
     }
 
+    private static void prestarLibro() {
 
-    private static void revisarAntesDeSalir(int hash_anterior){
+        listarBibliotecarios(listaBibliotecarios);
+        System.out.println("Ingrese nro bibliotecario (indice)");
+        int indiceBiblio = Integer.parseInt(teclado.nextLine());
+
+        listarLibros(listaLibros);
+        System.out.println("Ingrese nro libro a prestar (indice)");
+        int indiceLibro = Integer.parseInt(teclado.nextLine());
+        
+        listarAlumnos(listaAlumnos);
+        System.out.println("Ingrese nro alumno que retira (indice)");
+        int indiceAlumno = Integer.parseInt(teclado.nextLine());
+
+        prestamo prestamoLibro = new prestamo(listaBibliotecarios.get(indiceBiblio), listaLibros.get(indiceLibro),
+        listaAlumnos.get(indiceAlumno), new Date(), null);
+        listaPrestamos.add(prestamoLibro);
+        
+    }
+
+    private static void listarPrestamos(ArrayList<prestamo> listaPrestamos) {
+
+        if (listaPrestamos.size() == 0) {
+
+            System.out.println("No hay libros prestados en la lista!");
+
+        } else {
+            System.out.println("Cantidad de prestamos registrados en la lista : " + listaPrestamos.size());
+            // Mostrar todos los prestamos realizados
+            System.out.println("\n--- Lista de prestamos realizados ---");
+            for (prestamo pre : listaPrestamos) {
+                System.out.println("Indice en la lista: " + listaPrestamos.indexOf(pre));
+                System.out.println(pre);
+            }
+        }
+
+    }
+
+    private static void revisarAntesDeSalir(int hash_anterior_lib, int hash_anterior_alu) {
 
         int hash_listarLibros_actual = listaLibros.hashCode();
-        if (hash_anterior != hash_listarLibros_actual) {
+        int hash_listarAlumnos_actual = listaAlumnos.hashCode();
+        if (hash_anterior_lib != hash_listarLibros_actual || hash_anterior_alu != hash_listarAlumnos_actual) {
             System.out.println("Seguro quiere salir? Las listas actuales no fueron guardadas a archivo");
 
             String opcion_si_no;
