@@ -1,8 +1,9 @@
 package com.example.modelo;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class prestamo {
+public class prestamo implements Serializable{
 
     bibliotecario bibliotecario;
     libros libro;
@@ -12,7 +13,7 @@ public class prestamo {
 
     prestamo(){}
 
-    public prestamo(com.example.modelo.bibliotecario bibliotecario, libros libro, com.example.modelo.alumno alumno,
+    public prestamo(bibliotecario bibliotecario, libros libro, alumno alumno,
             Date fechaPrestamo, Date fechaDevolucion) {
         this.bibliotecario = bibliotecario;
         this.libro = libro;

@@ -33,9 +33,13 @@ public class Main {
     private static final String ARCHIVO_PERSONAS = RUTA_ARCHIVOS + "personas.dat";
     private static final String ARCHIVO_ALUMNOS = RUTA_ARCHIVOS + "alumnos.dat";
     private static final String ARCHIVO_BIBLIOTECARIOS = RUTA_ARCHIVOS + "bibliotecarios.dat";
+    private static final String ARCHIVO_PRESTAMOS = RUTA_ARCHIVOS + "prestamos.dat";
 
     private static int hash_listaLibros;
     private static int hash_listaAlumnos;
+    private static int hash_listaPersonas;
+    private static int hash_listaBibliotecarios;
+    private static int hash_listaPrestamos;
 
     public static void main(String[] args) {
 
@@ -43,6 +47,9 @@ public class Main {
 
         hash_listaLibros = listaLibros.hashCode();
         hash_listaAlumnos = listaAlumnos.hashCode();
+        hash_listaPersonas = listaPersonas.hashCode();
+        hash_listaBibliotecarios = listaBibliotecarios.hashCode();
+        hash_listaPrestamos = listaPrestamos.hashCode();
         System.out.println("Hash ni bien lei el archivo libros: " + hash_listaLibros);
         System.out.println("Hash ni bien lei el archivo alumnos: " + hash_listaAlumnos);
 
@@ -105,7 +112,8 @@ public class Main {
             case 11 -> prestarLibro();
             case 12 -> listarPrestamos(listaPrestamos);
             // case 13 -> recuperarLibro();
-            case 99 -> revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos);
+            case 14 -> buscarLibro(listaLibros, "Ulises");
+            case 99 -> revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos, hash_listaBibliotecarios, hash_listaPrestamos);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
     }
@@ -156,6 +164,31 @@ public class Main {
             }
             System.err.println("Hash actual: " + listaLibros.hashCode());
         }
+    }
+
+    private static int buscarLibro(ArrayList<libros> listaLibros, String nombreBuscado) {
+
+        int indiceLibro = -1;
+
+        if (listaLibros.size() == 0) {
+
+            System.out.println("No hay libros cargados en la lista!");
+
+        } else {
+
+            for (libros lib : listaLibros) {
+                if (lib.getNombre().equals(nombreBuscado)) {
+                    indiceLibro = listaLibros.indexOf(lib);
+
+                    System.out.println("Encontrado! Indice en la lista: " + listaLibros.indexOf(lib));
+                    System.out.println(lib);
+                } else {
+                    System.out.println("No Encontrado!");
+                }
+            }
+        }
+
+        return indiceLibro;
     }
 
     private static void cargarAlumnos() {
@@ -274,14 +307,22 @@ public class Main {
             System.err.println("Error al cargar bibliotecarios: " + e.getMessage());
         }
 
-        // Repetir para los otros ArrayList
+        // En esta parte realizo la carga de ARCHIVO_PRESTAMOSS a la
+        // listaPrestamos
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_PRESTAMOS))) {
+            listaPrestamos = (ArrayList<prestamo>) ois.readObject();
+            System.out.println("Datos de prestamos cargados desde " + ARCHIVO_PRESTAMOS);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error al cargar prestamos: " + e.getMessage());
+        }
     }
 
     private static void guardarDatosALosArchivos() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_LIBROS))) {
             oos.writeObject(listaLibros);
             System.out.println("Datos de libros guardados en " + ARCHIVO_LIBROS);
-            //------ Antes de seguir actualizo el hash ya que puede diferir del leido originalmente 
+            // ------ Antes de seguir actualizo el hash ya que puede diferir del leido
+            // originalmente
             hash_listaLibros = listaLibros.hashCode();
         } catch (IOException e) {
             System.err.println("Error al guardar libros: " + e.getMessage());
@@ -301,7 +342,13 @@ public class Main {
             System.err.println("Error al guardar bibliotecarios: " + e.getMessage());
         }
 
-        // Repetir para los otros ArrayList (personas, bibliotecarios, etc.)
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ARCHIVO_PRESTAMOS))) {
+            oos.writeObject(listaPrestamos);
+            System.out.println("Datos de prestamos guardados en " + ARCHIVO_PRESTAMOS);
+        } catch (IOException e) {
+            System.err.println("Error al guardar prestamos: " + e.getMessage());
+        }
+        
     }
 
     private static void prestarLibro() {
@@ -313,15 +360,15 @@ public class Main {
         listarLibros(listaLibros);
         System.out.println("Ingrese nro libro a prestar (indice)");
         int indiceLibro = Integer.parseInt(teclado.nextLine());
-        
+
         listarAlumnos(listaAlumnos);
         System.out.println("Ingrese nro alumno que retira (indice)");
         int indiceAlumno = Integer.parseInt(teclado.nextLine());
 
         prestamo prestamoLibro = new prestamo(listaBibliotecarios.get(indiceBiblio), listaLibros.get(indiceLibro),
-        listaAlumnos.get(indiceAlumno), new Date(), null);
+                listaAlumnos.get(indiceAlumno), new Date(), null);
         listaPrestamos.add(prestamoLibro);
-        
+
     }
 
     private static void listarPrestamos(ArrayList<prestamo> listaPrestamos) {
@@ -336,17 +383,22 @@ public class Main {
             System.out.println("\n--- Lista de prestamos realizados ---");
             for (prestamo pre : listaPrestamos) {
                 System.out.println("Indice en la lista: " + listaPrestamos.indexOf(pre));
-                System.out.println(pre);
+                //System.out.println(pre);
+                System.out.println("Bibliotecario que prestó : " + pre.getBibliotecario().getNombre() + ", " + pre.getBibliotecario().getApellido());
+                System.out.println("Alumno que recibió : " + pre.getAlumno().getNombre() + ", " + pre.getAlumno().getApellido());
+                System.out.println("Libro : " + pre.getLibro().getNombre() + ", autor: " + pre.getLibro().getAutor());
             }
         }
 
     }
 
-    private static void revisarAntesDeSalir(int hash_anterior_lib, int hash_anterior_alu) {
+    private static void revisarAntesDeSalir(int hash_anterior_lib, int hash_anterior_alu, int hash_anterior_biblio, int hash_anterior_pres) {
 
-        int hash_listarLibros_actual = listaLibros.hashCode();
-        int hash_listarAlumnos_actual = listaAlumnos.hashCode();
-        if (hash_anterior_lib != hash_listarLibros_actual || hash_anterior_alu != hash_listarAlumnos_actual) {
+        int hash_listaLibros_actual = listaLibros.hashCode();
+        int hash_listaAlumnos_actual = listaAlumnos.hashCode();
+        int hash_listaBibliotecarios_actual = listaBibliotecarios.hashCode();
+        int hash_listaPrestamos_actual = listaPrestamos.hashCode();
+        if (hash_anterior_lib != hash_listaLibros_actual || hash_anterior_alu != hash_listaAlumnos_actual || hash_anterior_biblio != hash_listaBibliotecarios_actual || hash_anterior_pres != hash_listaPrestamos_actual) {
             System.out.println("Seguro quiere salir? Las listas actuales no fueron guardadas a archivo");
 
             String opcion_si_no;
