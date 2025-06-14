@@ -78,6 +78,9 @@ public class Main {
         System.out.println("10) Guardar Datos de Memoria a Archivos");
         System.out.println("11) Registrar prestamo de libro");
         System.out.println("12) Listar Prestamos");
+        System.out.println("13) Registrar devolucion de libro");
+        System.out.println("14) Buscar Libros por Nombre");
+        System.out.println("15) Buscar Libros por Autor");
 
         System.out.println("99) Salir");
         System.out.print("Ingrese una opción: ");
@@ -104,15 +107,13 @@ public class Main {
             case 7 -> cargarBibliotecarios();
             case 8 -> listarBibliotecarios(listaBibliotecarios);
             // case 9 -> cargarDatosDesdeLosArchivos(); // Traerá todo lo que esté en los
-            // archivos a sus correspondientes
-            // arrays
-            case 10 -> guardarDatosALosArchivos(); // Llevará todo lo que esté en los arrays a sus correspondientes
-                                                   // archivos
-
+            // archivos a sus correspondientes arrays
+            case 10 -> guardarDatosALosArchivos(); // Llevará todo lo que esté en los arrays a sus correspondientes archivos
             case 11 -> prestarLibro();
             case 12 -> listarPrestamos(listaPrestamos);
-            // case 13 -> recuperarLibro();
-            case 14 -> buscarLibro(listaLibros, "Ulises");
+            case 13 -> recuperarLibro();
+            case 14 -> buscarLibroPorNombre();
+            case 15 -> buscarLibroPorAutor();
             case 99 -> revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos, hash_listaBibliotecarios, hash_listaPrestamos);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
@@ -166,6 +167,22 @@ public class Main {
         }
     }
 
+private static void buscarLibroPorNombre(){
+
+System.out.println("Ingrese nombre del libro a buscar: ");
+
+        String nombreBuscado = (teclado.nextLine());
+
+        int resultado = buscarLibro(listaLibros, nombreBuscado);
+
+        if (resultado < 0) {
+            System.out.println("El libro: " + nombreBuscado + " no se ha encontrado!");
+            }else{
+                System.out.println("El libro: " + nombreBuscado + " se ha encontrado!");
+                System.out.println(listaLibros.get(resultado));
+                }
+        }
+
     private static int buscarLibro(ArrayList<libros> listaLibros, String nombreBuscado) {
 
         int indiceLibro = -1;
@@ -180,15 +197,56 @@ public class Main {
                 if (lib.getNombre().equals(nombreBuscado)) {
                     indiceLibro = listaLibros.indexOf(lib);
 
-                    System.out.println("Encontrado! Indice en la lista: " + listaLibros.indexOf(lib));
-                    System.out.println(lib);
+                    //System.out.println("Encontrado! Indice en la lista: " + listaLibros.indexOf(lib));
+                    //System.out.println(lib);
                 } else {
-                    System.out.println("No Encontrado!");
+                    //System.out.println("No Encontrado!");
                 }
             }
         }
 
         return indiceLibro;
+    }
+
+        private static void buscarLibroPorAutor(){
+
+        System.out.println("Ingrese nombre del Autor a buscar: ");
+
+        String nombreBuscadoAutor = (teclado.nextLine());
+
+        ArrayList<Integer> resultado = buscarPorAutor(listaLibros, nombreBuscadoAutor);
+
+        if (resultado.size() == 0) {
+            System.out.println("El Autor: " + nombreBuscadoAutor + " no se ha encontrado!");
+            }else{
+                System.out.println("El autor: " + nombreBuscadoAutor + " se ha encontrado!");
+                for(int indiceLibro : resultado)
+                System.out.println(listaLibros.get(indiceLibro));
+                }
+        }
+
+        private static ArrayList<Integer> buscarPorAutor(ArrayList<libros> listaLibros, String nombreBuscado) {
+
+        ArrayList<Integer> librosDeAutor = new ArrayList<>();
+
+        if (listaLibros.size() == 0) {
+
+            System.out.println("No hay libros cargados en la lista!");
+
+        } else {
+
+            for (libros lib : listaLibros) {
+                if (lib.getAutor().equals(nombreBuscado)) {
+                    librosDeAutor.add(listaLibros.indexOf(lib)) ;
+
+                    //System.out.println("Encontrado! Indice en la lista: " + listaLibros.indexOf(lib));
+                    //System.out.println(lib);
+                } else {
+                    //System.out.println("No Encontrado!");
+                }
+            }
+        }
+        return librosDeAutor;
     }
 
     private static void cargarAlumnos() {
@@ -371,6 +429,16 @@ public class Main {
 
     }
 
+    private static void recuperarLibro() {
+
+        listarPrestamosSinDevolucion(listaPrestamos);
+        System.out.println("Ingrese nro prestamo (indice) del prestamo que se esta devolviendo");
+        int indicePrestamo = Integer.parseInt(teclado.nextLine());
+
+        listaPrestamos.get(indicePrestamo).setFechaDevolucion(new Date());
+        System.out.println("Listo! Quedó registrada la devolución");
+        }
+
     private static void listarPrestamos(ArrayList<prestamo> listaPrestamos) {
 
         if (listaPrestamos.size() == 0) {
@@ -389,7 +457,27 @@ public class Main {
                 System.out.println("Libro : " + pre.getLibro().getNombre() + ", autor: " + pre.getLibro().getAutor());
             }
         }
+    }
 
+    private static void listarPrestamosSinDevolucion(ArrayList<prestamo> listaPrestamos) {
+
+        if (listaPrestamos.size() == 0) {
+            System.out.println("No hay libros prestados en la lista!");
+        } else {
+            System.out.println("Cantidad de prestamos registrados en la lista pendientes de devolver: " + listaPrestamos.size());
+            // Mostrar todos los prestamos realizados
+            System.out.println("\n--- Lista de prestamos realizados pendientes de devolucion ---");
+            for (prestamo pre : listaPrestamos) {
+                if (pre.getFechaDevolucion() == null) {
+                System.out.println("-- Indice en la lista: " + listaPrestamos.indexOf(pre));
+                //System.out.println(pre);
+                System.out.println("Bibliotecario que prestó : " + pre.getBibliotecario().getNombre() + ", " + pre.getBibliotecario().getApellido());
+                System.out.println("Alumno que recibió : " + pre.getAlumno().getNombre() + ", " + pre.getAlumno().getApellido());
+                System.out.println("Libro : " + pre.getLibro().getNombre() + ", autor: " + pre.getLibro().getAutor());
+                System.out.println("Fecha de prestamo : " + pre.getFechaPrestamo());
+                }
+            }
+        }
     }
 
     private static void revisarAntesDeSalir(int hash_anterior_lib, int hash_anterior_alu, int hash_anterior_biblio, int hash_anterior_pres) {
