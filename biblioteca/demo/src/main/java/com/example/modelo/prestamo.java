@@ -11,7 +11,7 @@ public class prestamo implements Serializable{
     Date fechaPrestamo;
     Date fechaDevolucion;
 
-    prestamo(){}
+    public prestamo(){}
 
     public prestamo(bibliotecario bibliotecario, libros libro, alumno alumno,
             Date fechaPrestamo, Date fechaDevolucion) {

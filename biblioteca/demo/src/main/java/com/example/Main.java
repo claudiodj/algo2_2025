@@ -1,5 +1,6 @@
 package com.example;
 
+import com.example.control.DatabaseConnection;
 import com.example.modelo.alumno;
 import com.example.modelo.bibliotecario;
 import com.example.modelo.libros;
@@ -16,6 +17,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class Main {
     private static final Scanner teclado = new Scanner(System.in);
@@ -81,6 +84,8 @@ public class Main {
         System.out.println("13) Registrar devolucion de libro");
         System.out.println("14) Buscar Libros por Nombre");
         System.out.println("15) Buscar Libros por Autor");
+        System.out.println("16) Listar prestamos SIN devolución");
+        System.out.println("20) Conectar Base");
 
         System.out.println("99) Salir");
         System.out.print("Ingrese una opción: ");
@@ -112,8 +117,10 @@ public class Main {
             case 11 -> prestarLibro();
             case 12 -> listarPrestamos(listaPrestamos);
             case 13 -> recuperarLibro();
-            case 14 -> buscarLibroPorNombre();
+            case 14 -> buscarLibroPorNombre();            
             case 15 -> buscarLibroPorAutor();
+            case 16 -> listarPrestamosSinDevolucion(listaPrestamos);
+            case 20 -> conectarBase();
             case 99 -> revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos, hash_listaBibliotecarios, hash_listaPrestamos);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
         }
@@ -432,11 +439,15 @@ System.out.println("Ingrese nombre del libro a buscar: ");
     private static void recuperarLibro() {
 
         listarPrestamosSinDevolucion(listaPrestamos);
-        System.out.println("Ingrese nro prestamo (indice) del prestamo que se esta devolviendo");
+        System.out.println("Ingrese (indice) del prestamo que se esta devolviendo");
         int indicePrestamo = Integer.parseInt(teclado.nextLine());
 
+        System.out.println("hash previo: " + listaPrestamos.hashCode());
         listaPrestamos.get(indicePrestamo).setFechaDevolucion(new Date());
         System.out.println("Listo! Quedó registrada la devolución");
+                System.out.println("hash post: " + listaPrestamos.hashCode());
+                
+                System.out.println("hash post: " + listaPrestamos.hashCode());
         }
 
     private static void listarPrestamos(ArrayList<prestamo> listaPrestamos) {
@@ -455,6 +466,9 @@ System.out.println("Ingrese nombre del libro a buscar: ");
                 System.out.println("Bibliotecario que prestó : " + pre.getBibliotecario().getNombre() + ", " + pre.getBibliotecario().getApellido());
                 System.out.println("Alumno que recibió : " + pre.getAlumno().getNombre() + ", " + pre.getAlumno().getApellido());
                 System.out.println("Libro : " + pre.getLibro().getNombre() + ", autor: " + pre.getLibro().getAutor());
+                if (pre.getFechaDevolucion() == null) {
+                    System.out.println("Atención! Todavía no fué devuelto!");                    
+                }
             }
         }
     }
@@ -464,7 +478,7 @@ System.out.println("Ingrese nombre del libro a buscar: ");
         if (listaPrestamos.size() == 0) {
             System.out.println("No hay libros prestados en la lista!");
         } else {
-            System.out.println("Cantidad de prestamos registrados en la lista pendientes de devolver: " + listaPrestamos.size());
+            System.out.println("Cantidad de prestamos registrados: " + listaPrestamos.size());
             // Mostrar todos los prestamos realizados
             System.out.println("\n--- Lista de prestamos realizados pendientes de devolucion ---");
             for (prestamo pre : listaPrestamos) {
@@ -496,6 +510,17 @@ System.out.println("Ingrese nombre del libro a buscar: ");
                 guardarDatosALosArchivos();
             }
         }
+
+    }
+
+    private static void conectarBase() {
+try {
+    Connection conn = DatabaseConnection.getConnection();
+    System.out.println("Nos conectamos!");
+} catch (SQLException e) {
+        e.printStackTrace();
+        System.out.println("No nos conectamos!");
+}
 
     }
 
