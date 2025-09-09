@@ -2,10 +2,11 @@ package com.example.vista;
 
 import javax.swing.*;
 
-import com.example.modelo.alumno;
-import com.example.modelo.bibliotecario;
-import com.example.modelo.libros;
-import com.example.modelo.prestamo;
+import com.example.controlador.libroDAO;
+import com.example.modelo.alumnoVO;
+import com.example.modelo.bibliotecarioVO;
+import com.example.modelo.libroVO;
+import com.example.modelo.prestamoVO;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,15 +15,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class menu {
-    private static ArrayList<libros> listaLibros = new ArrayList<>();
-    private static ArrayList<alumno> listaAlumnos = new ArrayList<>();
-    private static ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
-    private static ArrayList<prestamo> listaPrestamos = new ArrayList<>();
+    private static ArrayList<libroVO> listaLibros = new ArrayList<>();
+    private static ArrayList<alumnoVO> listaAlumnos = new ArrayList<>();
+    private static ArrayList<bibliotecarioVO> listaBibliotecarios = new ArrayList<>();
+    private static ArrayList<prestamoVO> listaPrestamos = new ArrayList<>();
 
     public static void main(String[] args) {
-        // Cargar datos desde archivos (deberías implementar esto)
-        cargarDatosDesdeLosArchivos();
-        
         // Crear y mostrar la ventana principal
         SwingUtilities.invokeLater(() -> {
             crearYMostrarGUI();
@@ -87,17 +85,17 @@ public class menu {
         
         // Menú Archivos
         JMenu menuArchivos = new JMenu("Archivos");
-        JMenuItem itemGuardarDatos = new JMenuItem("Guardar Datos");
+        //JMenuItem itemGuardarDatos = new JMenuItem("Guardar Datos");
         JMenuItem itemSalir = new JMenuItem("Salir");
         
-        itemGuardarDatos.addActionListener(e -> guardarDatosALosArchivos());
+        //itemGuardarDatos.addActionListener(e -> guardarDatosALosArchivos());
         itemSalir.addActionListener(e -> {
             revisarAntesDeSalir();
             frame.dispose();
         });
         
-        menuArchivos.add(itemGuardarDatos);
-        menuArchivos.addSeparator();
+        //menuArchivos.add(itemGuardarDatos);
+        //menuArchivos.addSeparator();
         menuArchivos.add(itemSalir);
         
         // Agregar menús a la barra
@@ -146,7 +144,7 @@ public class menu {
         
         JButton btnGuardar = new JButton("Guardar");
         btnGuardar.addActionListener(e -> {
-            libros libro = new libros();
+            libroVO libro = new libroVO();
             libro.setNombre(txtNombre.getText());
             libro.setAutor(txtAutor.getText());
             libro.setEditorial(txtEditorial.getText());
@@ -154,8 +152,16 @@ public class menu {
             libro.setGenero(txtGenero.getText());
             libro.setDiscontinuo(chkDiscontinuo.isSelected());
             
+            libroDAO libroDAO = new libroDAO();
+
+            int idLibro = libroDAO.insertarLibro(libro);
             listaLibros.add(libro);
-            JOptionPane.showMessageDialog(frameLibro, "Libro guardado exitosamente!");
+            if (idLibro > 0) {
+                JOptionPane.showMessageDialog(frameLibro, "Libro guardado exitosamente con id: " + idLibro);    
+            } else {
+                JOptionPane.showMessageDialog(frameLibro, "Libro NO guardado!");
+            }
+            
             frameLibro.dispose();
         });
         
@@ -183,20 +189,28 @@ public class menu {
         frameLista.setSize(600, 400);
         frameLista.setLocationRelativeTo(null);
         
-        String[] columnNames = {"Nombre", "Autor", "Editorial", "ISBN", "Género", "Discontinuo"};
-        Object[][] data = new Object[listaLibros.size()][6];
+        libroDAO libroDAO = new libroDAO();
+
+        String[] columnNames = {"Id", "Nombre", "Autor", "Editorial", "ISBN", "Género", "Discontinuo"};
+
+        ArrayList<libroVO> listLib = new ArrayList<>();
+
+        listLib = libroDAO.leerLibros(null);
+
+        Object[][] dato = new Object[listLib.size()][7];
         
-        for (int i = 0; i < listaLibros.size(); i++) {
-            libros libro = listaLibros.get(i);
-            data[i][0] = libro.getNombre();
-            data[i][1] = libro.getAutor();
-            data[i][2] = libro.getEditorial();
-            data[i][3] = libro.getIsbn();
-            data[i][4] = libro.getGenero();
-            data[i][5] = libro.isDiscontinuo() ? "Sí" : "No";
+        for (int i = 0; i < listLib.size(); i++) {
+            libroVO libro = listLib.get(i);
+            dato[i][0] = libro.getIdLibro();
+            dato[i][1] = libro.getNombre();
+            dato[i][2] = libro.getAutor();
+            dato[i][3] = libro.getEditorial();
+            dato[i][4] = libro.getIsbn();
+            dato[i][5] = libro.getGenero();
+            dato[i][6] = libro.isDiscontinuo() ? "Sí" : "No";
         }
         
-        JTable table = new JTable(data, columnNames);
+        JTable table = new JTable(dato, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
         
         frameLista.add(scrollPane);
@@ -230,21 +244,21 @@ public class menu {
         // Combo box para seleccionar bibliotecario
         JLabel lblBibliotecario = new JLabel("Bibliotecario:");
         JComboBox<String> cbBibliotecarios = new JComboBox<>();
-        for (bibliotecario b : listaBibliotecarios) {
+        for (bibliotecarioVO b : listaBibliotecarios) {
             cbBibliotecarios.addItem(b.getNombre() + " " + b.getApellido());
         }
         
         // Combo box para seleccionar libro
         JLabel lblLibro = new JLabel("Libro:");
         JComboBox<String> cbLibros = new JComboBox<>();
-        for (libros l : listaLibros) {
+        for (libroVO l : listaLibros) {
             cbLibros.addItem(l.getNombre());
         }
         
         // Combo box para seleccionar alumno
         JLabel lblAlumno = new JLabel("Alumno:");
         JComboBox<String> cbAlumnos = new JComboBox<>();
-        for (alumno a : listaAlumnos) {
+        for (alumnoVO a : listaAlumnos) {
             cbAlumnos.addItem(a.getNombre() + " " + a.getApellido());
         }
         
@@ -255,7 +269,7 @@ public class menu {
             int indiceAlumno = cbAlumnos.getSelectedIndex();
             
             if (indiceBiblio >= 0 && indiceLibro >= 0 && indiceAlumno >= 0) {
-                prestamo prestamoLibro = new prestamo(
+                prestamoVO prestamoLibro = new prestamoVO(
                     listaBibliotecarios.get(indiceBiblio),
                     listaLibros.get(indiceLibro),
                     listaAlumnos.get(indiceAlumno),
@@ -292,7 +306,7 @@ public class menu {
         Object[][] data = new Object[listaPrestamos.size()][5];
         
         for (int i = 0; i < listaPrestamos.size(); i++) {
-            prestamo p = listaPrestamos.get(i);
+            prestamoVO p = listaPrestamos.get(i);
             data[i][0] = p.getBibliotecario().getNombre() + " " + p.getBibliotecario().getApellido();
             data[i][1] = p.getAlumno().getNombre() + " " + p.getAlumno().getApellido();
             data[i][2] = p.getLibro().getNombre();
@@ -307,15 +321,6 @@ public class menu {
         frameLista.setVisible(true);
     }
 
-    // Métodos de persistencia (deberías implementarlos según tu código original)
-    private static void cargarDatosDesdeLosArchivos() {
-        // Implementar según tu código original
-    }
-
-    private static void guardarDatosALosArchivos() {
-        // Implementar según tu código original
-    }
-
     private static void revisarAntesDeSalir() {
         // Implementar lógica para verificar cambios no guardados
         int opcion = JOptionPane.showConfirmDialog(null, 
@@ -324,7 +329,7 @@ public class menu {
             JOptionPane.YES_NO_CANCEL_OPTION);
         
         if (opcion == JOptionPane.YES_OPTION) {
-            guardarDatosALosArchivos();
+            //guardarDatosALosArchivos();
         } else if (opcion == JOptionPane.CANCEL_OPTION) {
             return; // No salir
         }

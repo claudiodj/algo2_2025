@@ -1,9 +1,9 @@
 package com.example.vista;
 
-import com.example.modelo.alumno;
-import com.example.modelo.bibliotecario;
-import com.example.modelo.libros;
-import com.example.modelo.prestamo;
+import com.example.modelo.alumnoVO;
+import com.example.modelo.bibliotecarioVO;
+import com.example.modelo.libroVO;
+import com.example.modelo.prestamoVO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,10 +14,10 @@ import java.util.Date;
 
 public class menuNuevo extends JFrame {
 
-    private final ArrayList<libros> listaLibros = new ArrayList<>();
-    private final ArrayList<alumno> listaAlumnos = new ArrayList<>();
-    private final ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
-    private final ArrayList<prestamo> listaPrestamos = new ArrayList<>();
+    private final ArrayList<libroVO> listaLibros = new ArrayList<>();
+    private final ArrayList<alumnoVO> listaAlumnos = new ArrayList<>();
+    private final ArrayList<bibliotecarioVO> listaBibliotecarios = new ArrayList<>();
+    private final ArrayList<prestamoVO> listaPrestamos = new ArrayList<>();
 
     private static final String RUTA_ARCHIVOS = "C:\\java\\biblioteca\\";
     private static final String ARCHIVO_LIBROS = RUTA_ARCHIVOS + "libros.dat";
@@ -183,7 +183,7 @@ public class menuNuevo extends JFrame {
                     return;
                 }
 
-                libros libro = new libros();
+                libroVO libro = new libroVO();
                 libro.setNombre(nombre);
                 libro.setAutor(autor);
                 libro.setEditorial(editorial);
@@ -219,7 +219,7 @@ public class menuNuevo extends JFrame {
         area.setEditable(false);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < listaLibros.size(); i++) {
-            libros lib = listaLibros.get(i);
+            libroVO lib = listaLibros.get(i);
             sb.append(i).append(": ")
               .append(lib.getNombre()).append(", Autor: ").append(lib.getAutor())
               .append(", ISBN: ").append(lib.getIsbn())
@@ -238,7 +238,7 @@ public class menuNuevo extends JFrame {
         String nombreBuscado = JOptionPane.showInputDialog(this, "Ingrese nombre del libro a buscar:");
         if (nombreBuscado == null || nombreBuscado.trim().isEmpty()) return;
 
-        for (libros lib : listaLibros) {
+        for (libroVO lib : listaLibros) {
             if (lib.getNombre().equalsIgnoreCase(nombreBuscado.trim())) {
                 String info = "Nombre: " + lib.getNombre() +
                         "\nAutor: " + lib.getAutor() +
@@ -302,7 +302,7 @@ public class menuNuevo extends JFrame {
                     return;
                 }
 
-                alumno alu = new alumno();
+                alumnoVO alu = new alumnoVO();
                 alu.setNombre(nombre);
                 alu.setApellido(apellido);
                 alu.setDni(dni);
@@ -339,7 +339,7 @@ public class menuNuevo extends JFrame {
         area.setEditable(false);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < listaAlumnos.size(); i++) {
-            alumno alu = listaAlumnos.get(i);
+            alumnoVO alu = listaAlumnos.get(i);
             sb.append(i).append(": ")
               .append(alu.getNombre()).append(" ").append(alu.getApellido())
               .append(", DNI: ").append(alu.getDni())
@@ -398,7 +398,7 @@ public class menuNuevo extends JFrame {
                     return;
                 }
 
-                bibliotecario bib = new bibliotecario();
+                bibliotecarioVO bib = new bibliotecarioVO();
                 bib.setNombre(nombre);
                 bib.setApellido(apellido);
                 bib.setDni(dni);
@@ -434,7 +434,7 @@ public class menuNuevo extends JFrame {
         area.setEditable(false);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < listaBibliotecarios.size(); i++) {
-            bibliotecario bib = listaBibliotecarios.get(i);
+            bibliotecarioVO bib = listaBibliotecarios.get(i);
             sb.append(i).append(": ")
               .append(bib.getNombre()).append(" ").append(bib.getApellido())
               .append(", DNI: ").append(bib.getDni())
@@ -460,17 +460,17 @@ public class menuNuevo extends JFrame {
         dialog.setLocationRelativeTo(this);
 
         JComboBox<String> comboBiblio = new JComboBox<>();
-        for (bibliotecario b : listaBibliotecarios) {
+        for (bibliotecarioVO b : listaBibliotecarios) {
             comboBiblio.addItem(b.getNombre() + " " + b.getApellido());
         }
 
         JComboBox<String> comboLibro = new JComboBox<>();
-        for (libros l : listaLibros) {
+        for (libroVO l : listaLibros) {
             comboLibro.addItem(l.getNombre());
         }
 
         JComboBox<String> comboAlumno = new JComboBox<>();
-        for (alumno a : listaAlumnos) {
+        for (alumnoVO a : listaAlumnos) {
             comboAlumno.addItem(a.getNombre() + " " + a.getApellido());
         }
 
@@ -498,7 +498,7 @@ public class menuNuevo extends JFrame {
                 JOptionPane.showMessageDialog(dialog, "Debe seleccionar todos los campos.");
                 return;
             }
-            prestamo p = new prestamo();
+            prestamoVO p = new prestamoVO();
             p.setBibliotecario(listaBibliotecarios.get(idxBiblio));
             p.setLibro(listaLibros.get(idxLibro));
             p.setAlumno(listaAlumnos.get(idxAlumno));
@@ -529,7 +529,7 @@ public class menuNuevo extends JFrame {
         area.setEditable(false);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < listaPrestamos.size(); i++) {
-            prestamo p = listaPrestamos.get(i);
+            prestamoVO p = listaPrestamos.get(i);
             sb.append(i).append(": Libro: ").append(p.getLibro().getNombre())
               .append(", Alumno: ").append(p.getAlumno().getNombre()).append(" ").append(p.getAlumno().getApellido())
               .append(", Bibliotecario: ").append(p.getBibliotecario().getNombre()).append(" ").append(p.getBibliotecario().getApellido())
@@ -572,23 +572,23 @@ public class menuNuevo extends JFrame {
     private void cargarDatosDesdeLosArchivos() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_LIBROS))) {
             listaLibros.clear();
-            listaLibros.addAll((ArrayList<libros>) ois.readObject());
+            listaLibros.addAll((ArrayList<libroVO>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
             // Puede no existir archivo la primera vez, no mostrar error
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_ALUMNOS))) {
             listaAlumnos.clear();
-            listaAlumnos.addAll((ArrayList<alumno>) ois.readObject());
+            listaAlumnos.addAll((ArrayList<alumnoVO>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_BIBLIOTECARIOS))) {
             listaBibliotecarios.clear();
-            listaBibliotecarios.addAll((ArrayList<bibliotecario>) ois.readObject());
+            listaBibliotecarios.addAll((ArrayList<bibliotecarioVO>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO_PRESTAMOS))) {
             listaPrestamos.clear();
-            listaPrestamos.addAll((ArrayList<prestamo>) ois.readObject());
+            listaPrestamos.addAll((ArrayList<prestamoVO>) ois.readObject());
         } catch (IOException | ClassNotFoundException e) {
         }
     }

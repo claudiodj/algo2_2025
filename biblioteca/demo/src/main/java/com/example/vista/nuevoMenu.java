@@ -4,18 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import com.example.modelo.alumno;
-import com.example.modelo.bibliotecario;
-import com.example.modelo.libros;
-import com.example.modelo.prestamo;
+import com.example.modelo.alumnoVO;
+import com.example.modelo.bibliotecarioVO;
+import com.example.modelo.libroVO;
+import com.example.modelo.prestamoVO;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class nuevoMenu extends JFrame {
-    private ArrayList<libros> listaLibros = new ArrayList<>();
-    private ArrayList<alumno> listaAlumnos = new ArrayList<>();
-    private ArrayList<bibliotecario> listaBibliotecarios = new ArrayList<>();
-    private ArrayList<prestamo> listaPrestamos = new ArrayList<>();
+    private ArrayList<libroVO> listaLibros = new ArrayList<>();
+    private ArrayList<alumnoVO> listaAlumnos = new ArrayList<>();
+    private ArrayList<bibliotecarioVO> listaBibliotecarios = new ArrayList<>();
+    private ArrayList<prestamoVO> listaPrestamos = new ArrayList<>();
 
     public nuevoMenu() {
         setTitle("Sistema de Biblioteca");
@@ -101,7 +101,7 @@ public class nuevoMenu extends JFrame {
 
         JButton btnGuardar = new JButton("Guardar");
         btnGuardar.addActionListener(e -> {
-            libros libro = new libros();
+            libroVO libro = new libroVO();
             libro.setNombre(txtNombre.getText());
             libro.setAutor(txtAutor.getText());
             libro.setEditorial(txtEditorial.getText());
@@ -134,7 +134,7 @@ public class nuevoMenu extends JFrame {
         }
 
         DefaultListModel<String> model = new DefaultListModel<>();
-        for (libros libro : listaLibros) {
+        for (libroVO libro : listaLibros) {
             model.addElement(libro.getNombre() + " - " + libro.getAutor());
         }
 
@@ -153,7 +153,7 @@ public class nuevoMenu extends JFrame {
         if (nombreBuscado == null || nombreBuscado.trim().isEmpty()) return;
 
         StringBuilder resultado = new StringBuilder();
-        for (libros libro : listaLibros) {
+        for (libroVO libro : listaLibros) {
             if (libro.getNombre().equalsIgnoreCase(nombreBuscado)) {
                 resultado.append("Libro encontrado:\n");
                 resultado.append(libro.toString()).append("\n\n");
