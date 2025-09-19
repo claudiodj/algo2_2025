@@ -28,9 +28,9 @@ public class menu {
     }
 
     private static void crearYMostrarGUI() {
-        JFrame frame = new JFrame("Sistema de Biblioteca");
+        JFrame frame = new JFrame("Sistema de la Biblioteca del ISFT 182");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(1000, 800);
         frame.setLocationRelativeTo(null);
 
         // Panel principal con BorderLayout
@@ -43,12 +43,18 @@ public class menu {
         JMenu menuLibros = new JMenu("Libros");
         JMenuItem itemCargarLibros = new JMenuItem("Cargar Libros");
         JMenuItem itemListarLibros = new JMenuItem("Listar Libros");
+        JMenuItem itemBorrarLibro = new JMenuItem("Borrar Libro");
+        JMenuItem itemEditarLibro = new JMenuItem("Editar Libro");
         
         itemCargarLibros.addActionListener(e -> mostrarFormularioLibros());
         itemListarLibros.addActionListener(e -> listarLibrosEnVentana());
+        itemBorrarLibro.addActionListener(e -> borrarLibro());
+        itemEditarLibro.addActionListener(e -> editarLibroEnVentana());
         
         menuLibros.add(itemCargarLibros);
         menuLibros.add(itemListarLibros);
+        menuLibros.add(itemBorrarLibro);
+        menuLibros.add(itemEditarLibro);
         
         // Menú Alumnos
         JMenu menuAlumnos = new JMenu("Alumnos");
@@ -84,7 +90,7 @@ public class menu {
         menuPrestamos.add(itemListarPrestamos);
         
         // Menú Archivos
-        JMenu menuArchivos = new JMenu("Archivos");
+        JMenu menuArchivos = new JMenu("Acciones");
         //JMenuItem itemGuardarDatos = new JMenuItem("Guardar Datos");
         JMenuItem itemSalir = new JMenuItem("Salir");
         
@@ -119,7 +125,7 @@ public class menu {
     // Métodos para mostrar formularios
     private static void mostrarFormularioLibros() {
         JFrame frameLibro = new JFrame("Cargar Libro");
-        frameLibro.setSize(400, 500);
+        frameLibro.setSize(500, 650);
         frameLibro.setLocationRelativeTo(null);
         
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
@@ -155,7 +161,7 @@ public class menu {
             libroDAO libroDAO = new libroDAO();
 
             int idLibro = libroDAO.insertarLibro(libro);
-            listaLibros.add(libro);
+            //listaLibros.add(libro);
             if (idLibro > 0) {
                 JOptionPane.showMessageDialog(frameLibro, "Libro guardado exitosamente con id: " + idLibro);    
             } else {
@@ -182,6 +188,136 @@ public class menu {
         
         frameLibro.add(new JScrollPane(panel));
         frameLibro.setVisible(true);
+    }
+
+    private static void borrarLibro(){
+        //HAY QUE DESARROLLAR ESTE CODIGO
+        System.out.println("Se pidio la acción de borrar un libro");
+
+
+        JFrame frameBorrarLibro = new JFrame("Borrar Libro indicando Id");
+        frameBorrarLibro.setSize(400, 250);
+        frameBorrarLibro.setLocationRelativeTo(null);
+                
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        
+        JLabel lblIdABorrar = new JLabel("   Id a borrar:");
+        JTextField txtIdABorrar = new JTextField();
+        
+        JButton btnBorrar = new JButton("Borrar");
+        btnBorrar.addActionListener(e -> {
+            libroVO libro = new libroVO();
+            libro.setIdLibro(Integer.parseInt(txtIdABorrar.getText()));
+            
+            libroDAO libroDAO = new libroDAO();
+
+            int borradoExitoso = libroDAO.borrarLibro(libro);
+            
+            if (borradoExitoso > 0) {
+                JOptionPane.showMessageDialog(frameBorrarLibro, "Libro borrado exitosamente");    
+            } else {
+                JOptionPane.showMessageDialog(frameBorrarLibro, "Libro NO borrado!");
+            }
+            
+            frameBorrarLibro.dispose();
+        });
+        
+        panel.add(lblIdABorrar);
+        panel.add(txtIdABorrar);
+        panel.add(new JLabel());
+        panel.add(btnBorrar);
+        
+        frameBorrarLibro.add(new JScrollPane(panel));
+        frameBorrarLibro.setVisible(true);
+    }
+
+    private static void editarLibroEnVentana() {
+        System.out.println("Accion de editar requerida");
+
+        JFrame frameLibro = new JFrame("Editar Libro");
+        frameLibro.setSize(500, 650);
+        frameLibro.setLocationRelativeTo(null);
+        
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        
+        JLabel lblIdLibro = new JLabel("ID:");
+        JTextField txtIdLibro = new JTextField();
+
+        JLabel lblNombre = new JLabel("Nombre:");
+        JTextField txtNombre = new JTextField();
+        
+        JLabel lblAutor = new JLabel("Autor:");
+        JTextField txtAutor = new JTextField();
+        
+        JLabel lblEditorial = new JLabel("Editorial:");
+        JTextField txtEditorial = new JTextField();
+        
+        JLabel lblIsbn = new JLabel("ISBN:");
+        JTextField txtIsbn = new JTextField();
+        
+        JLabel lblGenero = new JLabel("Género:");
+        JTextField txtGenero = new JTextField();
+        
+        JLabel lblDiscontinuo = new JLabel("Discontinuado:");
+        JCheckBox chkDiscontinuo = new JCheckBox();
+        
+        JButton btnBuscar = new JButton("Buscar");
+        btnBuscar.addActionListener(e -> {
+                        
+            ArrayList<libroVO> libros = new ArrayList<>();
+            libroDAO libroDAO = new libroDAO();
+
+            libros = libroDAO.leerLibros("id = " + txtIdLibro.getText());
+
+            if (libros.size() == 0) {
+                JOptionPane.showMessageDialog(frameLibro, "No se encontro libro con id: " + txtIdLibro.getText());
+            } else {
+                JOptionPane.showMessageDialog(frameLibro, "Libro encontrado!");
+
+                libroVO libEncontrado = new libroVO();
+
+                libEncontrado.setNombre(libros.get(0).getNombre());
+                libEncontrado.setAutor(libros.get(0).getAutor());
+                libEncontrado.setEditorial(libros.get(0).getEditorial());
+                libEncontrado.setGenero(libros.get(0).getGenero());
+                libEncontrado.setIsbn(libros.get(0).getIsbn());
+                libEncontrado.setDiscontinuo(libros.get(0).isDiscontinuo());
+
+                txtNombre.setText(libEncontrado.getNombre());
+                txtAutor.setText(libEncontrado.getAutor());
+                txtEditorial.setText(libEncontrado.getEditorial());
+                txtGenero.setText(libEncontrado.getGenero());
+                txtIsbn.setText(libEncontrado.getIsbn()+"");
+                if (libEncontrado.isDiscontinuo() == true) {
+                    chkDiscontinuo.setEnabled(true);
+                }
+
+
+            }
+
+            
+            frameLibro.dispose();
+        });
+        
+        panel.add(lblIdLibro);
+        panel.add(lblNombre);
+        panel.add(txtNombre);
+        panel.add(lblAutor);
+        panel.add(txtAutor);
+        panel.add(lblEditorial);
+        panel.add(txtEditorial);
+        panel.add(lblIsbn);
+        panel.add(txtIsbn);
+        panel.add(lblGenero);
+        panel.add(txtGenero);
+        panel.add(lblDiscontinuo);
+        panel.add(chkDiscontinuo);
+        panel.add(new JLabel());
+        panel.add(btnBuscar);
+        
+        frameLibro.add(new JScrollPane(panel));
+        frameLibro.setVisible(true);
+
     }
 
     private static void listarLibrosEnVentana() {

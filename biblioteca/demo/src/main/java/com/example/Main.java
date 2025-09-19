@@ -60,11 +60,17 @@ public class Main {
     }
         */
 
-    ArrayList<libroVO> libros = new ArrayList<>();
+    ArrayList<libroVO> listaDeLibros = new ArrayList<>();
     
-    libros = libroDAO.leerLibros(" nombre like 'La%'");
+    listaDeLibros = libroDAO.leerLibros(" isbn <= 789798777 and editorial like '%erna%'");  //  " nombre like 'La%'"
+    
+    for (libroVO lib : listaDeLibros){
+        System.out.println(lib.toString());
+    }
 
-    for (libroVO lib : libros){
+    listaDeLibros = libroDAO.leerLibros("");  //  " nombre like 'La%'"
+    
+    for (libroVO lib : listaDeLibros){
         System.out.println(lib.toString());
     }
 

@@ -61,9 +61,7 @@ public class libroDAO {
         try {
             ps = conexion.conectar().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); // Prepara la
             ps.setInt(1, libro.getIdLibro());
-            
-            ps.executeUpdate();
-            borradoExitoso = 1;
+            borradoExitoso = ps.executeUpdate();
         } catch (Exception ex) {
             System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
         } finally {
@@ -119,8 +117,8 @@ public ArrayList<libroVO> leerLibros(String filtros){
 
     String sql = "select * from libros "; // Sentencia SQL para leer todos los libros
 
-    PreparedStatement ps = null;
-    ResultSet rs = null;
+    //PreparedStatement ps = null;
+    //ResultSet rs = null;
 
     try {
         if (filtros == null || filtros.isBlank()) {
@@ -129,9 +127,13 @@ public ArrayList<libroVO> leerLibros(String filtros){
             sql = sql + " where " + filtros;
         }
 
-        ps = conexion.conectar().prepareStatement(sql);
+        System.out.println("Sentencia SQL : " + sql);
+        //PreparedStatement ps = null;
+        //ResultSet rs = null;
 
-        rs = ps.executeQuery();    
+        PreparedStatement ps = conexion.conectar().prepareStatement(sql);
+
+        ResultSet rs = ps.executeQuery();    
         while (rs.next()) {
             libroVO libro = new libroVO();
             libro.setIdLibro(rs.getInt(1));
@@ -144,12 +146,13 @@ public ArrayList<libroVO> leerLibros(String filtros){
 
             listaLibros.add(libro);
         }
+        ps.close();
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
         } finally {
             try {
-                ps.close();
+                //ps.close();
                 //rs.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
