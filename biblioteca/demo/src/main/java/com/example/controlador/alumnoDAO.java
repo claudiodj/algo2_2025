@@ -1,0 +1,166 @@
+package com.example.controlador;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import com.example.modelo.alumnoVO;
+import com.example.modelo.libroVO;
+
+// Aqui implementamos los métodos CRUD y/o todo lo necesario que relacione libroVO con las operaciones de la base
+// CRUD: Create, crear, insertar; Read, leer; Update, actualizar; Delete, borrar
+public class alumnoDAO {
+
+    public int insertarAlumno(alumnoVO nuevoAlumno) {
+
+        // Como es un nuevo alumno el campo id_libro tiene que ser cero para que el
+        // autoincremental de la base le asigne el correspondiente
+        nuevoAlumno.setIdAlumno(0);
+
+        ConectarBase conexion = new ConectarBase();
+        //--------------------------------------1 2 3 4 5 6 7 8
+        String sql = "insert into alumnos values(?,?,?,?,?,?,?,?)"; // Sentencia SQL para insertar un nuevo libro.
+
+        PreparedStatement ps = null;
+
+        try {
+            ps = conexion.conectar().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); // Prepara la
+            ps.setInt(1, nuevoAlumno.getIdAlumno());
+            ps.setString(2, nuevoAlumno.getNombre());
+            ps.setString(3, nuevoAlumno.getApellido());
+            ps.setInt(4, nuevoAlumno.getDni());
+            ps.setString(5, nuevoAlumno.getEmail());
+            ps.setInt(6, nuevoAlumno.getNroLegajo());
+            ps.setString(7, nuevoAlumno.getTurno()+"");
+            ps.setString(8, nuevoAlumno.getCarrera());
+
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys(); // Obtiene el ID generado.
+            rs.next(); // Baja una fila del resultset: allí está el id asignado en la base de datos.
+            nuevoAlumno.setIdAlumno(rs.getInt(1)); // Asigna el ID generado al nuevo libro.
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
+        } finally {
+            try {
+                ps.close();
+            } catch (Exception ex) {
+            }
+        }
+        return nuevoAlumno.getIdAlumno(); // Retorna el ID del nuevo libro o -1 si ocurre un error.
+    }
+
+    public int borrarLibro(libroVO libro) {
+       
+        int borradoExitoso = 0;
+
+        ConectarBase conexion = new ConectarBase();
+
+        String sql = "delete from libros where idLibro = ?"; // Sentencia SQL para insertar un nuevo libro.
+
+        PreparedStatement ps = null;
+
+        try {
+            ps = conexion.conectar().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); // Prepara la
+            ps.setInt(1, libro.getIdLibro());
+            borradoExitoso = ps.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
+        } finally {
+            try {
+                ps.close();
+            } catch (Exception ex) {
+            }
+        }
+        return borradoExitoso; // Retorna 0 si falló y 1 si borró exitosamente
+    }
+
+public int actualizarLibro(libroVO libro) {
+
+    // Se procede a actualizar los atributos del id_libro recibido
+        
+    int filasActualizadas = 0; // False: no se actualizo
+
+    ConectarBase conexion = new ConectarBase();
+        //                                   1          2              3         4           5                6                 7
+    String sql = "update libros set nombre = ?, autor = ?, editorial = ?, isbn = ?, genero = ?, discontinuo = ? where idLibro = ? "; // Sentencia SQL para actualizar los atributos del idLibro
+
+    PreparedStatement ps = null;
+
+    try {
+            ps = conexion.conectar().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); // Prepara la
+            ps.setString(1, libro.getNombre());
+            ps.setString(2, libro.getAutor());
+            ps.setString(3, libro.getEditorial());
+            ps.setInt(4, libro.getIsbn());
+            ps.setString(5, libro.getGenero());
+            ps.setBoolean(6, libro.isDiscontinuo());
+            ps.setInt(7, libro.getIdLibro());
+            
+            ps.executeUpdate();
+            filasActualizadas = ps.getUpdateCount(); 
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
+        } finally {
+            try {
+                ps.close();
+            } catch (Exception ex) {
+            }
+        }
+        return filasActualizadas; // Retorna 0 si ocurre un error o 1 si actualizo OK.
+    }
+
+public ArrayList<libroVO> leerLibros(String filtros){
+
+    ArrayList<libroVO> listaLibros = new ArrayList<>();
+
+    ConectarBase conexion = new ConectarBase();
+
+    String sql = "select * from libros "; // Sentencia SQL para leer todos los libros
+
+    //PreparedStatement ps = null;
+    //ResultSet rs = null;
+
+    try {
+        if (filtros == null || filtros.isBlank()) {
+            sql = sql + " where 1 = 1";
+        } else  {
+            sql = sql + " where " + filtros;
+        }
+
+        System.out.println("Sentencia SQL : " + sql);
+        //PreparedStatement ps = null;
+        //ResultSet rs = null;
+
+        PreparedStatement ps = conexion.conectar().prepareStatement(sql);
+
+        ResultSet rs = ps.executeQuery();    
+        while (rs.next()) {
+            libroVO libro = new libroVO();
+            libro.setIdLibro(rs.getInt(1));
+            libro.setNombre(rs.getString(2));
+            libro.setAutor(rs.getString(3));
+            libro.setEditorial(rs.getString(4));
+            libro.setIsbn(rs.getInt(5));
+            libro.setGenero(rs.getString(6));
+            libro.setDiscontinuo(rs.getBoolean(7));
+
+            listaLibros.add(libro);
+        }
+        ps.close();
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage()); // Manejo de excepciones genéricas.
+        } finally {
+            try {
+                //ps.close();
+                //rs.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    return listaLibros;
+}    
+
+}

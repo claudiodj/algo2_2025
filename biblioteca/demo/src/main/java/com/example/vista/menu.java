@@ -2,6 +2,7 @@ package com.example.vista;
 
 import javax.swing.*;
 
+import com.example.controlador.alumnoDAO;
 import com.example.controlador.libroDAO;
 import com.example.modelo.alumnoVO;
 import com.example.modelo.bibliotecarioVO;
@@ -93,15 +94,7 @@ public class menu {
         JMenu menuArchivos = new JMenu("Acciones");
         //JMenuItem itemGuardarDatos = new JMenuItem("Guardar Datos");
         JMenuItem itemSalir = new JMenuItem("Salir");
-        
-        //itemGuardarDatos.addActionListener(e -> guardarDatosALosArchivos());
-        itemSalir.addActionListener(e -> {
-            revisarAntesDeSalir();
-            frame.dispose();
-        });
-        
-        //menuArchivos.add(itemGuardarDatos);
-        //menuArchivos.addSeparator();
+
         menuArchivos.add(itemSalir);
         
         // Agregar menús a la barra
@@ -267,7 +260,7 @@ public class menu {
             ArrayList<libroVO> libros = new ArrayList<>();
             libroDAO libroDAO = new libroDAO();
 
-            libros = libroDAO.leerLibros("id = " + txtIdLibro.getText());
+            libros = libroDAO.leerLibros("idLibro = " + txtIdLibro.getText());
 
             if (libros.size() == 0) {
                 JOptionPane.showMessageDialog(frameLibro, "No se encontro libro con id: " + txtIdLibro.getText());
@@ -291,15 +284,12 @@ public class menu {
                 if (libEncontrado.isDiscontinuo() == true) {
                     chkDiscontinuo.setEnabled(true);
                 }
-
-
             }
-
-            
-            frameLibro.dispose();
+            //frameLibro.dispose();
         });
         
         panel.add(lblIdLibro);
+        panel.add(txtIdLibro);
         panel.add(lblNombre);
         panel.add(txtNombre);
         panel.add(lblAutor);
@@ -356,6 +346,105 @@ public class menu {
     // Implementar métodos similares para alumnos, bibliotecarios y préstamos
     private static void mostrarFormularioAlumnos() {
         // Similar a mostrarFormularioLibros pero con campos de alumno
+        JFrame frameAlumno = new JFrame("Cargar Alumno");
+        frameAlumno.setSize(500, 650);
+        frameAlumno.setLocationRelativeTo(null);
+        
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        
+        JLabel lblNombre = new JLabel("Nombre:");
+        JTextField txtNombre = new JTextField();
+        
+        JLabel lblApellido = new JLabel("Apellido:");
+        JTextField txtApellido = new JTextField();
+        
+        JLabel lblDni = new JLabel("DNI:");
+        JTextField txtDni = new JTextField();
+        
+        JLabel lblEmail = new JLabel("Email:");
+        JTextField txtEmail = new JTextField();
+        
+        JLabel lblNroLegajo = new JLabel("Nro Legajo:");
+        JTextField txtNroLegajo = new JTextField();
+
+        JLabel lblTurno = new JLabel("Turno:\n");
+        // Definicion de opciones únicas para TURNO: hacemos uso de RADIO BUTTON
+        JRadioButton turnoManana;
+        JRadioButton turnoTarde;
+        JRadioButton turnoNoche;
+        ButtonGroup grupoTurnos;
+
+        // Opciones de Turno
+        turnoManana = new JRadioButton("Mañana", true);
+        turnoTarde = new JRadioButton("Tarde");
+        turnoNoche = new JRadioButton("Noche");
+
+        // Agrupar los botones de radio
+        grupoTurnos = new ButtonGroup();
+        grupoTurnos.add(turnoManana);
+        grupoTurnos.add(turnoTarde);
+        grupoTurnos.add(turnoNoche);
+
+        JLabel lblCarrera = new JLabel("Carrera:");
+        JTextField txtCarrera = new JTextField();
+
+        JButton btnGuardar = new JButton("Guardar");
+        btnGuardar.addActionListener(e -> {
+            alumnoVO alumno = new alumnoVO();
+            alumno.setNombre(txtNombre.getText());
+            alumno.setApellido(txtApellido.getText());
+            alumno.setDni(Integer.parseInt(txtDni.getText()));
+            alumno.setEmail(txtEmail.getText());
+            alumno.setNroLegajo(Integer.parseInt(txtNroLegajo.getText()));
+
+            char turnoSeleccionado = 'M'; // Mañana, a menos que se seleccione otro 
+
+            if (turnoTarde.isSelected()) {
+                turnoSeleccionado = 'T';
+                } else if (turnoNoche.isSelected()) {
+                    turnoSeleccionado = 'N';
+                    } 
+
+            alumno.setTurno(turnoSeleccionado);
+            alumno.setCarrera(txtCarrera.getText());
+                        
+            alumnoDAO alumnoDAO = new alumnoDAO();
+
+            int idAlumno = alumnoDAO.insertarAlumno(alumno);
+            
+            if (idAlumno > 0) {
+                JOptionPane.showMessageDialog(frameAlumno, "Alumno guardado exitosamente con id: " + idAlumno);    
+            } else {
+                JOptionPane.showMessageDialog(frameAlumno, "Alumno NO guardado!");
+            }
+            
+            frameAlumno.dispose();
+        });
+        
+        // ------------ AQUI se arma el orden en que aparecen los componentes en el panel del formulario:
+        panel.add(lblNombre);
+        panel.add(txtNombre);
+        panel.add(lblApellido);
+        panel.add(txtApellido);
+        panel.add(lblDni);
+        panel.add(txtDni);
+        panel.add(lblEmail);
+        panel.add(txtEmail);
+        panel.add(lblNroLegajo);
+        panel.add(txtNroLegajo);
+        // Agrega los botones de radio al panel
+        panel.add(lblTurno);
+        panel.add(turnoManana);
+        panel.add(turnoTarde);
+        panel.add(turnoNoche);
+
+        panel.add(lblCarrera);
+        panel.add(txtCarrera);
+        panel.add(new JLabel());
+        panel.add(btnGuardar);
+        
+        frameAlumno.add(new JScrollPane(panel));
+        frameAlumno.setVisible(true);
     }
 
     private static void listarAlumnosEnVentana() {
@@ -457,19 +546,4 @@ public class menu {
         frameLista.setVisible(true);
     }
 
-    private static void revisarAntesDeSalir() {
-        // Implementar lógica para verificar cambios no guardados
-        int opcion = JOptionPane.showConfirmDialog(null, 
-            "¿Desea guardar los cambios antes de salir?", 
-            "Confirmar salida", 
-            JOptionPane.YES_NO_CANCEL_OPTION);
-        
-        if (opcion == JOptionPane.YES_OPTION) {
-            //guardarDatosALosArchivos();
-        } else if (opcion == JOptionPane.CANCEL_OPTION) {
-            return; // No salir
-        }
-        
-        System.exit(0);
-    }
 }
