@@ -61,12 +61,18 @@ public class menu {
         JMenu menuAlumnos = new JMenu("Alumnos");
         JMenuItem itemCargarAlumnos = new JMenuItem("Cargar Alumnos");
         JMenuItem itemListarAlumnos = new JMenuItem("Listar Alumnos");
+        JMenuItem itemBorrarAlumno = new JMenuItem("Borrar Alumno");
+        JMenuItem itemEditarAlumno = new JMenuItem("Editar Alumno");
         
         itemCargarAlumnos.addActionListener(e -> mostrarFormularioAlumnos());
         itemListarAlumnos.addActionListener(e -> listarAlumnosEnVentana());
+        //itemBorrarAlumno.addActionListener(e -> borrarAlumnoEnVentana());
+        //itemEditarAlumno.addActionListener(e -> editarAlumnoEnVentana());
         
         menuAlumnos.add(itemCargarAlumnos);
         menuAlumnos.add(itemListarAlumnos);
+        menuAlumnos.add(itemBorrarAlumno);
+        menuAlumnos.add(itemEditarAlumno);
         
         // Menú Bibliotecarios
         JMenu menuBibliotecarios = new JMenu("Bibliotecarios");
@@ -142,7 +148,59 @@ public class menu {
         JCheckBox chkDiscontinuo = new JCheckBox();
         
         JButton btnGuardar = new JButton("Guardar");
+
         btnGuardar.addActionListener(e -> {
+
+        String nombre = txtNombre.getText().trim();
+        String autor = txtAutor.getText().trim();
+        String editorial = txtEditorial.getText().trim();
+        String isbnText = txtIsbn.getText().trim();
+        String genero = txtGenero.getText().trim();
+
+        // Expresiones regulares
+        String regexTexto = "^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]+$";  // Solo letras y espacios
+        String regexIsbn = "^\\d{4,6}$";           // ISBN de 10 o 13 dígitos
+    
+        // Validaciones
+        if (!nombre.matches(regexTexto)) {
+            JOptionPane.showMessageDialog(frameLibro, "El nombre solo puede contener letras y espacios");
+            txtNombre.setBackground(Color.yellow);
+            txtNombre.requestFocusInWindow();
+            return;
+        } else{
+            txtNombre.setBackground(Color.white);    
+        }
+
+        if (!autor.matches(regexTexto)) {
+            JOptionPane.showMessageDialog(frameLibro, "El autor solo puede contener letras y espacios");
+            return;
+        }
+
+        if (!editorial.matches(regexTexto)) {
+            JOptionPane.showMessageDialog(frameLibro, "La editorial solo puede contener letras y espacios");
+            return;
+        }
+
+        if (!isbnText.matches(regexIsbn)) {
+            JOptionPane.showMessageDialog(frameLibro, "El ISBN debe ser numérico de entre 4 y 6 dígitos");
+            return;
+        }
+
+        if (!genero.matches(regexTexto)) {
+            JOptionPane.showMessageDialog(frameLibro, "El género solo puede contener letras y espacios");
+            return;
+        }
+
+            // Si todo es válido, creo el objeto y guardo
+        libroVO libro = new libroVO();
+        libro.setNombre(nombre);
+        libro.setAutor(autor);
+        libro.setEditorial(editorial);
+        libro.setIsbn(Integer.parseInt(isbnText));
+        libro.setGenero(genero);
+        libro.setDiscontinuo(chkDiscontinuo.isSelected());
+
+/* -------------- ESTO YA NO VA
             libroVO libro = new libroVO();
             libro.setNombre(txtNombre.getText());
             libro.setAutor(txtAutor.getText());
@@ -151,6 +209,7 @@ public class menu {
             libro.setGenero(txtGenero.getText());
             libro.setDiscontinuo(chkDiscontinuo.isSelected());
             
+            */
             libroDAO libroDAO = new libroDAO();
 
             int idLibro = libroDAO.insertarLibro(libro);
