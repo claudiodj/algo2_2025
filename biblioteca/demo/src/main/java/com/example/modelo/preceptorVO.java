@@ -1,5 +1,5 @@
 package com.example.modelo;
 
-public class preceptor {
+public class preceptorVO extends personaVO {
 
 }

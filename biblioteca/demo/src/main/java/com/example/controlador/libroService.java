@@ -1,10 +1,10 @@
 package com.example.controlador;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+//import java.sql.PreparedStatement;
+//import java.sql.ResultSet;
+//import java.sql.Statement;
 
-import com.example.modelo.libroVO;
+//import com.example.modelo.libroVO;
 
 public class libroService {
 

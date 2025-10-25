@@ -1,11 +1,10 @@
 package com.example;
 
-import com.example.controlador.ConectarBase;
 import com.example.controlador.libroDAO;
 import com.example.modelo.alumnoVO;
 import com.example.modelo.bibliotecarioVO;
 import com.example.modelo.libroVO;
-import com.example.modelo.personaVO;
+//import com.example.modelo.personaVO;
 import com.example.modelo.prestamoVO;
 
 import java.util.ArrayList;
@@ -20,14 +19,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
+//import java.sql.SQLException;
 
 public class MainOld {
     private static final Scanner teclado = new Scanner(System.in);
 
     private static ArrayList<libroVO> listaLibros = new ArrayList<>();
-    private static ArrayList<personaVO> listaPersonas = new ArrayList<>();
+    //private static ArrayList<personaVO> listaPersonas = new ArrayList<>();
     private static ArrayList<alumnoVO> listaAlumnos = new ArrayList<>();
     private static ArrayList<bibliotecarioVO> listaBibliotecarios = new ArrayList<>();
     private static ArrayList<prestamoVO> listaPrestamos = new ArrayList<>();
@@ -36,14 +34,14 @@ public class MainOld {
     // archivos
     private static final String RUTA_ARCHIVOS = "C:\\java\\biblioteca\\";
     private static final String ARCHIVO_LIBROS = RUTA_ARCHIVOS + "libros.dat";
-    private static final String ARCHIVO_PERSONAS = RUTA_ARCHIVOS + "personas.dat";
+    //private static final String ARCHIVO_PERSONAS = RUTA_ARCHIVOS + "personas.dat";
     private static final String ARCHIVO_ALUMNOS = RUTA_ARCHIVOS + "alumnos.dat";
     private static final String ARCHIVO_BIBLIOTECARIOS = RUTA_ARCHIVOS + "bibliotecarios.dat";
     private static final String ARCHIVO_PRESTAMOS = RUTA_ARCHIVOS + "prestamos.dat";
 
     private static int hash_listaLibros;
     private static int hash_listaAlumnos;
-    private static int hash_listaPersonas;
+    //private static int hash_listaPersonas;
     private static int hash_listaBibliotecarios;
     private static int hash_listaPrestamos;
 
@@ -53,7 +51,7 @@ public class MainOld {
 
         hash_listaLibros = listaLibros.hashCode();
         hash_listaAlumnos = listaAlumnos.hashCode();
-        hash_listaPersonas = listaPersonas.hashCode();
+        //hash_listaPersonas = listaPersonas.hashCode();
         hash_listaBibliotecarios = listaBibliotecarios.hashCode();
         hash_listaPrestamos = listaPrestamos.hashCode();
         System.out.println("Hash ni bien lei el archivo libros: " + hash_listaLibros);
@@ -124,7 +122,7 @@ public class MainOld {
             case 14 -> buscarLibroPorNombre();
             case 15 -> buscarLibroPorAutor();
             case 16 -> listarPrestamosSinDevolucion(listaPrestamos);
-            case 20 -> conectarBase();
+            //case 20 -> conectarBase();
             case 99 ->
                 revisarAntesDeSalir(hash_listaLibros, hash_listaAlumnos, hash_listaBibliotecarios, hash_listaPrestamos);
             default -> System.out.println("Opción no válida. Intente nuevamente.");
@@ -535,17 +533,6 @@ public class MainOld {
             if (opcion_si_no.equals("s")) {
                 guardarDatosALosArchivos();
             }
-        }
-
-    }
-
-    private static void conectarBase() {
-        try {
-            Connection conn = DatabaseConnection.getConnection();
-            System.out.println("Nos conectamos!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("No nos conectamos!");
         }
 
     }

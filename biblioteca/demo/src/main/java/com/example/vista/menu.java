@@ -10,29 +10,20 @@ import com.example.modelo.libroVO;
 import com.example.modelo.prestamoVO;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class menu {
-    private static ArrayList<libroVO> listaLibros = new ArrayList<>();
+    //private static ArrayList<libroVO> listaLibros = new ArrayList<>(); // VER combo en prestamos, aprox linea 532
     private static ArrayList<alumnoVO> listaAlumnos = new ArrayList<>();
     private static ArrayList<bibliotecarioVO> listaBibliotecarios = new ArrayList<>();
     private static ArrayList<prestamoVO> listaPrestamos = new ArrayList<>();
 
-    public static void main(String[] args) {
-        // Crear y mostrar la ventana principal
-        SwingUtilities.invokeLater(() -> {
-            crearYMostrarGUI();
-        });
-    }
-
-    private static void crearYMostrarGUI() {
-        JFrame frame = new JFrame("Sistema de la Biblioteca del ISFT 182");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 800);
-        frame.setLocationRelativeTo(null);
+    public static void crearYMostrarGUI() {
+        JFrame frameMenu = new JFrame("Sistema de la Biblioteca del ISFT 182");
+        frameMenu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frameMenu.setSize(1000, 800);
+        frameMenu.setLocationRelativeTo(null);
 
         // Panel principal con BorderLayout
         JPanel panelPrincipal = new JPanel(new BorderLayout());
@@ -102,7 +93,17 @@ public class menu {
         JMenuItem itemSalir = new JMenuItem("Salir");
 
         menuArchivos.add(itemSalir);
-        
+
+        itemSalir.addActionListener(e -> {
+            // cerrar la ventana actual
+            frameMenu.dispose();
+    
+            // abrir nuevamente el login
+            login.main(null);;
+        });
+
+
+
         // Agregar menús a la barra
         menuBar.add(menuLibros);
         menuBar.add(menuAlumnos);
@@ -110,15 +111,15 @@ public class menu {
         menuBar.add(menuPrestamos);
         menuBar.add(menuArchivos);
         
-        frame.setJMenuBar(menuBar);
+        frameMenu.setJMenuBar(menuBar);
         
         // Panel de bienvenida
         JLabel lblBienvenida = new JLabel("Bienvenido al Sistema de Biblioteca", JLabel.CENTER);
         lblBienvenida.setFont(new Font("Arial", Font.BOLD, 24));
         panelPrincipal.add(lblBienvenida, BorderLayout.CENTER);
         
-        frame.add(panelPrincipal);
-        frame.setVisible(true);
+        frameMenu.add(panelPrincipal);
+        frameMenu.setVisible(true);
     }
 
     // Métodos para mostrar formularios
@@ -159,7 +160,7 @@ public class menu {
 
         // Expresiones regulares
         String regexTexto = "^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s]+$";  // Solo letras y espacios
-        String regexIsbn = "^\\d{4,6}$";           // ISBN de 10 o 13 dígitos
+        String regexIsbn = "^\\d{4,6}$";           // ISBN de entre 4 y 6 dígitos
     
         // Validaciones
         if (!nombre.matches(regexTexto)) {
@@ -173,7 +174,11 @@ public class menu {
 
         if (!autor.matches(regexTexto)) {
             JOptionPane.showMessageDialog(frameLibro, "El autor solo puede contener letras y espacios");
+            txtAutor.setBackground(Color.ORANGE);
+            txtAutor.requestFocusInWindow();
             return;
+        } else{
+            txtAutor.setBackground(Color.white);
         }
 
         if (!editorial.matches(regexTexto)) {
@@ -200,16 +205,6 @@ public class menu {
         libro.setGenero(genero);
         libro.setDiscontinuo(chkDiscontinuo.isSelected());
 
-/* -------------- ESTO YA NO VA
-            libroVO libro = new libroVO();
-            libro.setNombre(txtNombre.getText());
-            libro.setAutor(txtAutor.getText());
-            libro.setEditorial(txtEditorial.getText());
-            libro.setIsbn(Integer.parseInt(txtIsbn.getText()));
-            libro.setGenero(txtGenero.getText());
-            libro.setDiscontinuo(chkDiscontinuo.isSelected());
-            
-            */
             libroDAO libroDAO = new libroDAO();
 
             int idLibro = libroDAO.insertarLibro(libro);
@@ -528,6 +523,7 @@ public class menu {
         // Combo box para seleccionar bibliotecario
         JLabel lblBibliotecario = new JLabel("Bibliotecario:");
         JComboBox<String> cbBibliotecarios = new JComboBox<>();
+
         for (bibliotecarioVO b : listaBibliotecarios) {
             cbBibliotecarios.addItem(b.getNombre() + " " + b.getApellido());
         }
@@ -535,7 +531,14 @@ public class menu {
         // Combo box para seleccionar libro
         JLabel lblLibro = new JLabel("Libro:");
         JComboBox<String> cbLibros = new JComboBox<>();
-        for (libroVO l : listaLibros) {
+
+        // Instancio el DAO
+        libroDAO libDAO = new libroDAO();
+        
+        // Declaro un ArrayList<libroVO> y lo cargo el Arraylist listaLibros con leerLibros
+        ArrayList<libroVO> listaLibros = libDAO.leerLibros(null);
+
+        for (libroVO l : libDAO.leerLibros(null)) {
             cbLibros.addItem(l.getNombre());
         }
         
@@ -603,6 +606,12 @@ public class menu {
         
         frameLista.add(scrollPane);
         frameLista.setVisible(true);
+    }
+
+    public static void volverLogin() {
+        System.out.println("volver");
+        //frameMenu.setVisible(false);
+        login.main(null);
     }
 
 }
